@@ -1,0 +1,11 @@
+New-AzResourceGroupDeployment -ResourceGroupName $ResourcegroupName -TemplateFile "ArmTemplate_master.json" -TemplateParameterFile "ArmTemplateParameters_master.json"
+New-AzResourceGroupDeployment -ResourceGroupName $ResourcegroupName -TemplateFile "ArmTemplate_0.json"
+New-AzResourceGroupDeployment -ResourceGroupName $ResourcegroupName -TemplateFile "arm_template.json"  -TemplateParameterFile "arm_template_parameters.json"
+
+
+
+git remote add origin https://aeliav@dev.azure.com/aeliav/aeliavMachines/_git/aeliavMachines
+git push -u origin --all
+
+
+git remote add origin https://aeliav@dev.azure.com/aeliav/aeliavMachines/_git/aeliavMachines git push -u origin --all

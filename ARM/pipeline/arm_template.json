@@ -1,0 +1,284 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "adfMachinesSQL2ADX"
+        },
+        "machinessql_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'machinessql'"
+        },
+        "AzureDataExplorer1_servicePrincipalKey": {
+            "type": "secureString",
+            "metadata": "Secure string for 'servicePrincipalKey' of 'AzureDataExplorer1'"
+        },
+        "AzureDataExplorer1_properties_typeProperties_tenant": {
+            "type": "string",
+            "defaultValue": "93f33571-550f-43cf-b09f-cd331338d086"
+        },
+        "AzureDataExplorer1_properties_typeProperties_servicePrincipalId": {
+            "type": "string",
+            "defaultValue": "dc1869c5-367b-425d-9668-d89ec2ff44ac"
+        },
+        "AzureDataExplorer1_properties_typeProperties_database": {
+            "type": "string",
+            "defaultValue": "MachinesAdxDB"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/DestinationDataset_10f')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataExplorer1",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureDataExplorerTable",
+                "schema": [],
+                "typeProperties": {
+                    "table": "MachineLogs"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/AzureDataExplorer1')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SourceDataset_10f')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "machinessql",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "EventId",
+                        "type": "int",
+                        "precision": 10,
+                        "scale": 255
+                    },
+                    {
+                        "name": "MachineId",
+                        "type": "uniqueidentifier",
+                        "precision": 255,
+                        "scale": 255
+                    },
+                    {
+                        "name": "Score",
+                        "type": "decimal",
+                        "precision": 5,
+                        "scale": 2
+                    },
+                    {
+                        "name": "MachineGroup",
+                        "type": "smallint",
+                        "precision": 5,
+                        "scale": 255
+                    },
+                    {
+                        "name": "ReportTime",
+                        "type": "datetime2",
+                        "precision": 255,
+                        "scale": 7
+                    }
+                ],
+                "typeProperties": {}
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/machinessql')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Every15Min')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "CopyPipeline_10f",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Minute",
+                        "interval": 15,
+                        "startTime": "2020-03-12T20:59:00Z",
+                        "timeZone": "UTC"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/pipelines/CopyPipeline_10f')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/machinessql')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "connectionString": "[parameters('machinessql_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/AzureDataExplorer1')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureDataExplorer",
+                "typeProperties": {
+                    "endpoint": "https://adxc4machines.eastus.kusto.windows.net",
+                    "tenant": "[parameters('AzureDataExplorer1_properties_typeProperties_tenant')]",
+                    "servicePrincipalId": "[parameters('AzureDataExplorer1_properties_typeProperties_servicePrincipalId')]",
+                    "servicePrincipalKey": {
+                        "type": "SecureString",
+                        "value": "[parameters('AzureDataExplorer1_servicePrincipalKey')]"
+                    },
+                    "database": "[parameters('AzureDataExplorer1_properties_typeProperties_database')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/CopyPipeline_10f')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Copy_10f",
+                        "type": "Copy",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [
+                            {
+                                "name": "Source",
+                                "value": "."
+                            },
+                            {
+                                "name": "Destination",
+                                "value": "MachineLogs"
+                            }
+                        ],
+                        "typeProperties": {
+                            "source": {
+                                "type": "AzureSqlSource",
+                                "sqlReaderQuery": "exec [dbo].[usp_SendMachineDetailsToADX]"
+                            },
+                            "sink": {
+                                "type": "AzureDataExplorerSink"
+                            },
+                            "enableStaging": false,
+                            "enableSkipIncompatibleRow": false,
+                            "translator": {
+                                "type": "TabularTranslator",
+                                "mappings": [
+                                    {
+                                        "source": {
+                                            "name": "EventId",
+                                            "type": "Int32"
+                                        },
+                                        "sink": {
+                                            "name": "EventId",
+                                            "type": "Int32"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "MachineId",
+                                            "type": "Guid"
+                                        },
+                                        "sink": {
+                                            "name": "MachineId",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "Score",
+                                            "type": "Decimal"
+                                        },
+                                        "sink": {
+                                            "name": "Score",
+                                            "type": "Decimal"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "MachineGroup",
+                                            "type": "Int16"
+                                        },
+                                        "sink": {
+                                            "name": "MachineGroup",
+                                            "type": "Int32"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "ReportTime",
+                                            "type": "DateTime"
+                                        },
+                                        "sink": {
+                                            "name": "ReportTime",
+                                            "type": "DateTime"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "SourceDataset_10f",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "DestinationDataset_10f",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ]
+                    }
+                ],
+                "annotations": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/SourceDataset_10f')]",
+                "[concat(variables('factoryId'), '/datasets/DestinationDataset_10f')]"
+            ]
+        }
+    ]
+}

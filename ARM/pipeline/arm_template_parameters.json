@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "value": "adfMachinesSQL2ADX"
+        },
+        "machinessql_connectionString": {
+            "value": ""
+        },
+        "AzureDataExplorer1_servicePrincipalKey": {
+            "value": ""
+        },
+        "AzureDataExplorer1_properties_typeProperties_tenant": {
+            "value": "93f33571-550f-43cf-b09f-cd331338d086"
+        },
+        "AzureDataExplorer1_properties_typeProperties_servicePrincipalId": {
+            "value": "dc1869c5-367b-425d-9668-d89ec2ff44ac"
+        },
+        "AzureDataExplorer1_properties_typeProperties_database": {
+            "value": "MachinesAdxDB"
+        }
+    }
+}

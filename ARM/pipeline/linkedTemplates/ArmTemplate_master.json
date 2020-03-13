@@ -1,0 +1,77 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "adfMachinesSQL2ADX"
+        },
+        "machinessql_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'machinessql'"
+        },
+        "AzureDataExplorer1_servicePrincipalKey": {
+            "type": "secureString",
+            "metadata": "Secure string for 'servicePrincipalKey' of 'AzureDataExplorer1'"
+        },
+        "AzureDataExplorer1_properties_typeProperties_tenant": {
+            "type": "string",
+            "defaultValue": "93f33571-550f-43cf-b09f-cd331338d086"
+        },
+        "AzureDataExplorer1_properties_typeProperties_servicePrincipalId": {
+            "type": "string",
+            "defaultValue": "dc1869c5-367b-425d-9668-d89ec2ff44ac"
+        },
+        "AzureDataExplorer1_properties_typeProperties_database": {
+            "type": "string",
+            "defaultValue": "MachinesAdxDB"
+        },
+        "containerUri": {
+            "type": "string",
+            "metadata": "URI to storage account containing linked ARM templates"
+        },
+        "containerSasToken": {
+            "type": "string",
+            "metadata": "Sas token to storage account containing linked ARM templates"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "ArmTemplate_0",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-02-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    },
+                    "machinessql_connectionString": {
+                        "value": "[parameters('machinessql_connectionString')]"
+                    },
+                    "AzureDataExplorer1_servicePrincipalKey": {
+                        "value": "[parameters('AzureDataExplorer1_servicePrincipalKey')]"
+                    },
+                    "AzureDataExplorer1_properties_typeProperties_tenant": {
+                        "value": "[parameters('AzureDataExplorer1_properties_typeProperties_tenant')]"
+                    },
+                    "AzureDataExplorer1_properties_typeProperties_servicePrincipalId": {
+                        "value": "[parameters('AzureDataExplorer1_properties_typeProperties_servicePrincipalId')]"
+                    },
+                    "AzureDataExplorer1_properties_typeProperties_database": {
+                        "value": "[parameters('AzureDataExplorer1_properties_typeProperties_database')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

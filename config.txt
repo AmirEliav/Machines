@@ -1,0 +1,16 @@
+[General]
+ResourcegroupName=rg_Machines
+Location=East US
+
+[ADX]
+AdxServerName=adxc4machines
+AdxDbName=MachinesAdxDB
+
+
+[SQL]
+SqlServer=machinessql
+SqlDbName=MachinesDB
+SqlUserName=MachineUser
+SqlPass=5e9+?5:/f;ExBD>u
+SqlUser=machinesSqlUser
+connString="Server=tcp:machinessql.database.windows.net,1433;Initial Catalog=MachinesDB;Persist Security Info=False;User ID=machinesSqlUser;Password=Pa$$w0rd!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=300;"
